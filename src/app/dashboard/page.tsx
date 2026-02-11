@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect } from 'react'
-import Sidebar from '@/components/sidebar'
 import { supabase } from '@/lib/supabase'
 
 interface Agenda {
@@ -230,13 +229,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex">
-      <Sidebar />
-      <main className="flex-1 ml-64 bg-gray-50 min-h-screen">
-        <div className="flex h-screen">
-          {/* Calendar Section */}
-          <div className="flex-1 p-6">
-            <div className="bg-white rounded-lg shadow-md h-full">
+    <div className="bg-gray-50 min-h-screen">
+      <div className="flex h-screen">
+        {/* Calendar Section */}
+        <div className="flex-1 p-6">
+          <div className="bg-white rounded-lg shadow-md h-full">
               {/* Calendar Header */}
               <div className="flex items-center justify-between p-4 border-b">
                 <button
@@ -373,7 +370,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   )
 }

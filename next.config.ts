@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  reactStrictMode: true,
+  reactStrictMode: false, // Disable strict mode to prevent double rendering
   // Ensure src directory is used
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
 };
