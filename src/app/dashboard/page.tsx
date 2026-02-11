@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
 
 interface Agenda {
   id: number
@@ -20,113 +19,116 @@ interface Agenda {
   created_at: string
 }
 
+// Sample data - moved outside component to prevent recreation
+const sampleEvents: Agenda[] = [
+  {
+    id: 1,
+    nama_kegiatan: 'Finalisasi Materi Penyusunan Arsitektur dan Peta Rencana Inisiatif Strategis Nasional Pada SIA SPBE',
+    deskripsi: 'Finalisasi materi untuk penyusunan arsitektur dan peta rencana inisiatif strategis nasional',
+    substansi_kegiatan: 'Penyusunan Arsitektur dan Peta Rencana Pemerintah Digital',
+    jenis_tugas: 'Teknis',
+    jenis_kegiatan: 'Finalisasi',
+    pelaksana: ['Muthia Nur Rachmayanti'],
+    pertanggung_jawaban: ['Admin Keuangan'],
+    tanggal_mulai: '2025-04-16',
+    tanggal_selesai: '2025-04-25',
+    waktu_mulai: '09:00',
+    waktu_selesai: '17:00',
+    dokumen: [],
+    target_selesai: '2025-04-25',
+    created_at: '2025-04-16'
+  },
+  {
+    id: 2,
+    nama_kegiatan: 'Pembuatan Laporan',
+    deskripsi: 'Pembuatan laporan bulanan kegiatan',
+    substansi_kegiatan: 'Administrasi',
+    jenis_tugas: 'Administrasi',
+    jenis_kegiatan: 'Laporan',
+    pelaksana: ['Perwita Sari'],
+    pertanggung_jawaban: [],
+    tanggal_mulai: '2025-04-10',
+    tanggal_selesai: '2025-04-10',
+    waktu_mulai: '09:00',
+    waktu_selesai: '17:00',
+    dokumen: [],
+    target_selesai: '2025-04-10',
+    created_at: '2025-04-10'
+  },
+  {
+    id: 3,
+    nama_kegiatan: 'Materi Pendampingan',
+    deskripsi: 'Persiapan materi untuk pendampingan instansi',
+    substansi_kegiatan: 'Pendampingan',
+    jenis_tugas: 'Teknis',
+    jenis_kegiatan: 'Persiapan',
+    pelaksana: ['Muthia Nur Rachmayanti'],
+    pertanggung_jawaban: [],
+    tanggal_mulai: '2025-04-14',
+    tanggal_selesai: '2025-04-14',
+    waktu_mulai: '09:00',
+    waktu_selesai: '17:00',
+    dokumen: [],
+    target_selesai: '2025-04-14',
+    created_at: '2025-04-14'
+  },
+  {
+    id: 4,
+    nama_kegiatan: 'Konsinyering Pendampingan',
+    deskripsi: 'Konsinyering untuk pendampingan arsitektur SPBE',
+    substansi_kegiatan: 'Konsinyering',
+    jenis_tugas: 'Administrasi',
+    jenis_kegiatan: 'Konsinyering',
+    pelaksana: ['Muthia Nur Rachmayanti'],
+    pertanggung_jawaban: ['Admin Keuangan'],
+    tanggal_mulai: '2025-04-29',
+    tanggal_selesai: '2025-04-29',
+    waktu_mulai: '09:00',
+    waktu_selesai: '17:00',
+    dokumen: [],
+    target_selesai: '2025-04-29',
+    created_at: '2025-04-29'
+  },
+  {
+    id: 5,
+    nama_kegiatan: 'FGD Sosialisasi',
+    deskripsi: 'Focus Group Discussion untuk sosialisasi program',
+    substansi_kegiatan: 'Sosialisasi',
+    jenis_tugas: 'Teknis',
+    jenis_kegiatan: 'FGD',
+    pelaksana: ['Perwita Sari'],
+    pertanggung_jawaban: [],
+    tanggal_mulai: '2025-04-05',
+    tanggal_selesai: '2025-04-05',
+    waktu_mulai: '09:00',
+    waktu_selesai: '17:00',
+    dokumen: [],
+    target_selesai: '2025-04-05',
+    created_at: '2025-04-05'
+  }
+]
+
 export default function Dashboard() {
   const [currentMonth, setCurrentMonth] = useState(3) // April = 3 (0-indexed)
   const [currentYear, setCurrentYear] = useState(2025)
   const [selectedEvent, setSelectedEvent] = useState<Agenda | null>(null)
-  const [agendas, setAgendas] = useState<Agenda[]>([])
-  const [loading, setLoading] = useState(false)
-
-  // Sample data - sesuai dengan gambar kalender
-  const sampleEvents: Agenda[] = [
-    {
-      id: 1,
-      nama_kegiatan: 'Finalisasi Materi Penyusunan Arsitektur dan Peta Rencana Inisiatif Strategis Nasional Pada SIA SPBE',
-      deskripsi: 'Finalisasi materi untuk penyusunan arsitektur dan peta rencana inisiatif strategis nasional',
-      substansi_kegiatan: 'Penyusunan Arsitektur dan Peta Rencana Pemerintah Digital',
-      jenis_tugas: 'Teknis',
-      jenis_kegiatan: 'Finalisasi',
-      pelaksana: ['Muthia Nur Rachmayanti'],
-      pertanggung_jawaban: ['Admin Keuangan'],
-      tanggal_mulai: '2025-04-16',
-      tanggal_selesai: '2025-04-25',
-      waktu_mulai: '09:00',
-      waktu_selesai: '17:00',
-      dokumen: [],
-      target_selesai: '2025-04-25',
-      created_at: '2025-04-16'
-    },
-    {
-      id: 2,
-      nama_kegiatan: 'Pembuatan Laporan',
-      deskripsi: 'Pembuatan laporan bulanan kegiatan',
-      substansi_kegiatan: 'Administrasi',
-      jenis_tugas: 'Administrasi',
-      jenis_kegiatan: 'Laporan',
-      pelaksana: ['Perwita Sari'],
-      pertanggung_jawaban: [],
-      tanggal_mulai: '2025-04-10',
-      tanggal_selesai: '2025-04-10',
-      waktu_mulai: '09:00',
-      waktu_selesai: '17:00',
-      dokumen: [],
-      target_selesai: '2025-04-10',
-      created_at: '2025-04-10'
-    },
-    {
-      id: 3,
-      nama_kegiatan: 'Materi Pendampingan',
-      deskripsi: 'Persiapan materi untuk pendampingan instansi',
-      substansi_kegiatan: 'Pendampingan',
-      jenis_tugas: 'Teknis',
-      jenis_kegiatan: 'Persiapan',
-      pelaksana: ['Muthia Nur Rachmayanti'],
-      pertanggung_jawaban: [],
-      tanggal_mulai: '2025-04-14',
-      tanggal_selesai: '2025-04-14',
-      waktu_mulai: '09:00',
-      waktu_selesai: '17:00',
-      dokumen: [],
-      target_selesai: '2025-04-14',
-      created_at: '2025-04-14'
-    },
-    {
-      id: 4,
-      nama_kegiatan: 'Konsinyering Pendampingan',
-      deskripsi: 'Konsinyering untuk pendampingan arsitektur SPBE',
-      substansi_kegiatan: 'Konsinyering',
-      jenis_tugas: 'Administrasi',
-      jenis_kegiatan: 'Konsinyering',
-      pelaksana: ['Muthia Nur Rachmayanti'],
-      pertanggung_jawaban: ['Admin Keuangan'],
-      tanggal_mulai: '2025-04-29',
-      tanggal_selesai: '2025-04-29',
-      waktu_mulai: '09:00',
-      waktu_selesai: '17:00',
-      dokumen: [],
-      target_selesai: '2025-04-29',
-      created_at: '2025-04-29'
-    },
-    {
-      id: 5,
-      nama_kegiatan: 'FGD Sosialisasi',
-      deskripsi: 'Focus Group Discussion untuk sosialisasi program',
-      substansi_kegiatan: 'Sosialisasi',
-      jenis_tugas: 'Teknis',
-      jenis_kegiatan: 'FGD',
-      pelaksana: ['Perwita Sari'],
-      pertanggung_jawaban: [],
-      tanggal_mulai: '2025-04-05',
-      tanggal_selesai: '2025-04-05',
-      waktu_mulai: '09:00',
-      waktu_selesai: '17:00',
-      dokumen: [],
-      target_selesai: '2025-04-05',
-      created_at: '2025-04-05'
+  // Use lazy initialization to load from localStorage
+  const [agendas, setAgendas] = useState<Agenda[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedAgendas = localStorage.getItem('agendas')
+      if (savedAgendas) {
+        return JSON.parse(savedAgendas)
+      } else {
+        // Initialize with sample data
+        localStorage.setItem('agendas', JSON.stringify(sampleEvents))
+        return sampleEvents
+      }
     }
-  ]
+    return []
+  })
 
   useEffect(() => {
-    // Load data from localStorage or use sample data
-    const savedAgendas = localStorage.getItem('agendas')
-    if (savedAgendas) {
-      setAgendas(JSON.parse(savedAgendas))
-    } else {
-      setAgendas(sampleEvents)
-      localStorage.setItem('agendas', JSON.stringify(sampleEvents))
-    }
-    
-    // Listen for agenda updates from other pages
+    // Listen for agenda updates from other pages (only event listeners, no setState)
     const handleStorageChange = () => {
       const updatedAgendas = localStorage.getItem('agendas')
       if (updatedAgendas) {
@@ -278,13 +280,12 @@ export default function Dashboard() {
                   {renderCalendar()}
                 </div>
               </div>
-            </div>
           </div>
+        </div>
 
-          {/* Detail Section */}
-          <div className="w-80 p-6">
-            <div className="bg-white rounded-lg shadow-md h-full">
-              {selectedEvent ? (
+        {/* Detail Section */}
+        <div className="w-80 p-6">
+          <div className="bg-white rounded-lg shadow-md h-full">{selectedEvent ? (
                 <div className="p-6">
                   <h3 className="text-lg font-semibold text-blue-600 mb-4">Detil Kegiatan</h3>
                   
@@ -367,7 +368,6 @@ export default function Dashboard() {
                   <p>Klik pada kegiatan di kalender untuk melihat detail</p>
                 </div>
               )}
-            </div>
           </div>
         </div>
       </div>

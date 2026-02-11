@@ -1,7 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import Sidebar from '@/components/sidebar'
+import { useState } from 'react'
 
 interface Agenda {
   id: number
@@ -24,7 +22,16 @@ interface Agenda {
 export default function DataKegiatan() {
   const [showForm, setShowForm] = useState(false)
   const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(null)
-  const [agendas, setAgendas] = useState<Agenda[]>([])
+  // Use lazy initialization to load from localStorage
+  const [agendas, setAgendas] = useState<Agenda[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedAgendas = localStorage.getItem('agendas')
+      if (savedAgendas) {
+        return JSON.parse(savedAgendas)
+      }
+    }
+    return []
+  })
   const [loading, setLoading] = useState(false)
   const [currentMonth, setCurrentMonth] = useState('April')
   const [currentYear, setCurrentYear] = useState('2025')
@@ -35,7 +42,21 @@ export default function DataKegiatan() {
   const [uploadedFiles, setUploadedFiles] = useState<{[key: string]: File[]}>({}) // State untuk file upload
 
   // Form states
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    nama_kegiatan: string
+    deskripsi: string
+    substansi_kegiatan: string
+    jenis_tugas: string
+    jenis_kegiatan: string
+    pelaksana_kegiatan: string[]
+    pertanggung_jawaban: string[]
+    tanggal_mulai: string
+    tanggal_selesai: string
+    waktu_mulai: string
+    waktu_selesai: string
+    dokumen_teknis: string[]
+    target_selesai: string
+  }>({
     nama_kegiatan: '',
     deskripsi: '',
     substansi_kegiatan: '',
@@ -51,25 +72,11 @@ export default function DataKegiatan() {
     target_selesai: ''
   })
 
-  const fetchAgendas = async () => {
-    setLoading(true)
-    // Load from localStorage instead of supabase
-    const savedAgendas = localStorage.getItem('agendas')
-    if (savedAgendas) {
-      setAgendas(JSON.parse(savedAgendas))
-    }
-    setLoading(false)
-  }
-
   const updateLocalStorage = (newAgendas: Agenda[]) => {
     localStorage.setItem('agendas', JSON.stringify(newAgendas))
     // Trigger event for other components to update
     window.dispatchEvent(new Event('agenda-updated'))
   }
-
-  useEffect(() => {
-    fetchAgendas()
-  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -211,9 +218,7 @@ export default function DataKegiatan() {
   }
 
   return (
-    <div className="flex">
-      <Sidebar />
-      <div className="flex-1 ml-64 p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -421,7 +426,7 @@ export default function DataKegiatan() {
                   />
                 </div>
                 {formData.waktu_selesai && (
-                  <p className="text-red-500 text-xs mt-1">kosong = "selesai"</p>
+                  <p className="text-red-500 text-xs mt-1">kosong = &quot;selesai&quot;</p>
                 )}
               </div>
             </div>
@@ -915,7 +920,6 @@ export default function DataKegiatan() {
           </div>
         </div>
       )}
-      </div>
     </div>
   )
 }
