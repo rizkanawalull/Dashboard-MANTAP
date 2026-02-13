@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 
 interface Agenda {
   id: number
@@ -22,16 +23,7 @@ interface Agenda {
 export default function DataKegiatan() {
   const [showForm, setShowForm] = useState(false)
   const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(null)
-  // Use lazy initialization to load from localStorage
-  const [agendas, setAgendas] = useState<Agenda[]>(() => {
-    if (typeof window !== 'undefined') {
-      const savedAgendas = localStorage.getItem('agendas')
-      if (savedAgendas) {
-        return JSON.parse(savedAgendas)
-      }
-    }
-    return []
-  })
+  const [agendas, setAgendas] = useState<Agenda[]>([])
   const [loading, setLoading] = useState(false)
   const [currentMonth, setCurrentMonth] = useState('April')
   const [currentYear, setCurrentYear] = useState('2025')
@@ -72,51 +64,106 @@ export default function DataKegiatan() {
     target_selesai: ''
   })
 
-  const updateLocalStorage = (newAgendas: Agenda[]) => {
-    localStorage.setItem('agendas', JSON.stringify(newAgendas))
-    // Trigger event for other components to update
-    window.dispatchEvent(new Event('agenda-updated'))
+  // Fetch agendas from Supabase on mount
+  useEffect(() => {
+    fetchAgendas()
+  }, [])
+
+  const fetchAgendas = async () => {
+    setLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('agendas')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (error) throw error
+      setAgendas(data || [])
+      // Trigger event for other components to update
+      window.dispatchEvent(new Event('agenda-updated'))
+    } catch (error: any) {
+      console.error('Error fetching agendas:', error)
+      const errorMessage = error?.message || error?.toString() || 'Unknown error'
+      alert(`Gagal memuat data dari Supabase:\n${errorMessage}`)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
-    if (isEditing && editingAgenda) {
-      // Update existing agenda
-      const updatedAgenda = { ...editingAgenda, ...formData }
-      const newAgendas = agendas.map(agenda => 
-        agenda.id === editingAgenda.id ? updatedAgenda : agenda
-      )
-      setAgendas(newAgendas)
-      updateLocalStorage(newAgendas)
-      alert('Kegiatan berhasil diperbarui!')
-      setIsEditing(false)
-      setEditingAgenda(null)
-    } else {
-      // Create new agenda
-      const newAgenda: Agenda = {
-        id: Date.now(), // Simple ID generation
-        nama_kegiatan: formData.nama_kegiatan,
-        deskripsi: formData.deskripsi,
-        substansi_kegiatan: formData.substansi_kegiatan,
-        jenis_tugas: formData.jenis_tugas,
-        jenis_kegiatan: formData.jenis_kegiatan,
-        pelaksana: formData.pelaksana_kegiatan,
-        pertanggung_jawaban: formData.pertanggung_jawaban,
-        tanggal_mulai: formData.tanggal_mulai,
-        tanggal_selesai: formData.tanggal_selesai,
-        waktu_mulai: formData.waktu_mulai,
-        waktu_selesai: formData.waktu_selesai,
-        dokumen: formData.dokumen_teknis,
-        target_selesai: formData.target_selesai,
-        created_at: new Date().toISOString()
+    try {
+      if (isEditing && editingAgenda) {
+        // Update existing agenda in Supabase
+        const updatedData = {
+          nama_kegiatan: formData.nama_kegiatan,
+          deskripsi: formData.deskripsi,
+          substansi_kegiatan: formData.substansi_kegiatan,
+          jenis_tugas: formData.jenis_tugas,
+          jenis_kegiatan: formData.jenis_kegiatan,
+          pelaksana: formData.pelaksana_kegiatan,
+          pertanggung_jawaban: formData.pertanggung_jawaban,
+          tanggal_mulai: formData.tanggal_mulai || null,
+          tanggal_selesai: formData.tanggal_selesai || null,
+          waktu_mulai: formData.waktu_mulai || null,
+          waktu_selesai: formData.waktu_selesai || null,
+          dokumen: formData.dokumen_teknis,
+          target_selesai: formData.target_selesai || null
+        }
+        
+        console.log('Updating agenda:', updatedData)
+        
+        const { data, error } = await supabase
+          .from('agendas')
+          .update(updatedData)
+          .eq('id', editingAgenda.id)
+          .select()
+        
+        console.log('Update result:', { data, error })
+        
+        if (error) throw error
+        alert('Kegiatan berhasil diperbarui!')
+        setIsEditing(false)
+        setEditingAgenda(null)
+      } else {
+        // Create new agenda in Supabase
+        const newAgenda = {
+          nama_kegiatan: formData.nama_kegiatan,
+          deskripsi: formData.deskripsi,
+          substansi_kegiatan: formData.substansi_kegiatan,
+          jenis_tugas: formData.jenis_tugas,
+          jenis_kegiatan: formData.jenis_kegiatan,
+          pelaksana: formData.pelaksana_kegiatan,
+          pertanggung_jawaban: formData.pertanggung_jawaban,
+          tanggal_mulai: formData.tanggal_mulai || null,
+          tanggal_selesai: formData.tanggal_selesai || null,
+          waktu_mulai: formData.waktu_mulai || null,
+          waktu_selesai: formData.waktu_selesai || null,
+          dokumen: formData.dokumen_teknis,
+          target_selesai: formData.target_selesai || null
+        }
+        
+        console.log('Inserting agenda:', newAgenda)
+        
+        const { data, error } = await supabase
+          .from('agendas')
+          .insert([newAgenda])
+          .select()
+        
+        console.log('Insert result:', { data, error })
+        
+        if (error) throw error
+        alert('Kegiatan berhasil ditambahkan!')
       }
       
-      const newAgendas = [newAgenda, ...agendas]
-      setAgendas(newAgendas)
-      updateLocalStorage(newAgendas)
-      alert('Kegiatan berhasil ditambahkan!')
+      // Refresh data from Supabase
+      await fetchAgendas()
+    } catch (error: any) {
+      console.error('Error saving agenda:', error)
+      const errorMessage = error?.message || error?.toString() || 'Unknown error'
+      alert(`Gagal menyimpan data ke Supabase:\n${errorMessage}`)
     }
     
     setShowForm(false)
@@ -165,15 +212,27 @@ export default function DataKegiatan() {
     setSelectedAgenda(null)
   }
 
-  const handleDeleteClick = (agendaId: number) => {
+  const handleDeleteClick = async (agendaId: number) => {
     if (confirm('Apakah Anda yakin ingin menghapus kegiatan ini?')) {
-      const newAgendas = agendas.filter(agenda => agenda.id !== agendaId)
-      setAgendas(newAgendas)
-      updateLocalStorage(newAgendas)
-      if (selectedAgenda?.id === agendaId) {
-        setSelectedAgenda(null)
+      try {
+        const { error } = await supabase
+          .from('agendas')
+          .delete()
+          .eq('id', agendaId)
+        
+        if (error) throw error
+        
+        if (selectedAgenda?.id === agendaId) {
+          setSelectedAgenda(null)
+        }
+        alert('Kegiatan berhasil dihapus!')
+        // Refresh data
+        await fetchAgendas()
+      } catch (error: any) {
+        console.error('Error deleting agenda:', error)
+        const errorMessage = error?.message || error?.toString() || 'Unknown error'
+        alert(`Gagal menghapus data dari Supabase:\n${errorMessage}`)
       }
-      alert('Kegiatan berhasil dihapus!')
     }
   }
 
