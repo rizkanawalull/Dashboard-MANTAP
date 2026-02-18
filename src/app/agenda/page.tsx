@@ -16,7 +16,6 @@ interface Agenda {
   waktu_mulai: string
   waktu_selesai: string
   dokumen: string[]
-  target_selesai: string
   created_at: string
 }
 
@@ -46,9 +45,7 @@ export default function DataKegiatan() {
     tanggal_selesai: string
     waktu_mulai: string
     waktu_selesai: string
-    pelaksanaan_kegiatan: string
     dokumen_teknis: string[]
-    target_selesai: string
   }>({
     nama_kegiatan: '',
     deskripsi: '',
@@ -61,9 +58,7 @@ export default function DataKegiatan() {
     tanggal_selesai: '',
     waktu_mulai: '',
     waktu_selesai: '',
-    pelaksanaan_kegiatan: '',
-    dokumen_teknis: [],
-    target_selesai: ''
+    dokumen_teknis: []
   })
 
   // Fetch agendas from Supabase on mount
@@ -111,9 +106,7 @@ export default function DataKegiatan() {
           tanggal_selesai: formData.tanggal_selesai || null,
           waktu_mulai: formData.waktu_mulai || null,
           waktu_selesai: formData.waktu_selesai || null,
-          pelaksanaan_kegiatan: formData.pelaksanaan_kegiatan || null,
-          dokumen: formData.dokumen_teknis,
-          target_selesai: formData.target_selesai || null
+          dokumen: formData.dokumen_teknis
         }
         
         console.log('Updating agenda:', updatedData)
@@ -144,9 +137,7 @@ export default function DataKegiatan() {
           tanggal_selesai: formData.tanggal_selesai || null,
           waktu_mulai: formData.waktu_mulai || null,
           waktu_selesai: formData.waktu_selesai || null,
-          pelaksanaan_kegiatan: formData.pelaksanaan_kegiatan || null,
-          dokumen: formData.dokumen_teknis,
-          target_selesai: formData.target_selesai || null
+          dokumen: formData.dokumen_teknis
         }
         
         console.log('Inserting agenda:', newAgenda)
@@ -184,9 +175,7 @@ export default function DataKegiatan() {
       tanggal_selesai: '',
       waktu_mulai: '',
       waktu_selesai: '',
-      pelaksanaan_kegiatan: '',
-      dokumen_teknis: [],
-      target_selesai: ''
+      dokumen_teknis: []
     })
     setLoading(false)
   }
@@ -210,9 +199,7 @@ export default function DataKegiatan() {
       tanggal_selesai: agenda.tanggal_selesai,
       waktu_mulai: agenda.waktu_mulai,
       waktu_selesai: agenda.waktu_selesai,
-      pelaksanaan_kegiatan: agenda.pelaksanaan_kegiatan || '',
-      dokumen_teknis: agenda.dokumen,
-      target_selesai: agenda.target_selesai
+      dokumen_teknis: agenda.dokumen
     })
     setShowForm(true)
     setSelectedAgenda(null)
@@ -259,9 +246,7 @@ export default function DataKegiatan() {
       tanggal_selesai: '',
       waktu_mulai: '',
       waktu_selesai: '',
-      pelaksanaan_kegiatan: '',
-      dokumen_teknis: [],
-      target_selesai: ''
+      dokumen_teknis: []
     })
   }
 
@@ -445,16 +430,28 @@ export default function DataKegiatan() {
               </div>
             </div>
 
-            {/* Pelaksanaan Kegiatan */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pelaksanaan Kegiatan</label>
-               <input
-                type="date"
-                value={formData.pelaksanaan_kegiatan}
-                onChange={(e) => setFormData({...formData, pelaksanaan_kegiatan: e.target.value})}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-                required
-              />
+            {/* Tanggal Pelaksanaan Kegiatan */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                <input
+                  type="date"
+                  value={formData.tanggal_mulai}
+                  onChange={(e) => setFormData({...formData, tanggal_mulai: e.target.value})}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Selesai</label>
+                <input
+                  type="date"
+                  value={formData.tanggal_selesai}
+                  onChange={(e) => setFormData({...formData, tanggal_selesai: e.target.value})}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                  required
+                />
+              </div>
             </div>
 
             {/* Waktu Mulai dan Selesai */}
@@ -674,18 +671,6 @@ export default function DataKegiatan() {
               </div>
             </div>
 
-            {/* Target Waktu Penyelesaian Pekerjaan */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Target Waktu Penyelesaian Pekerjaan</label>
-              <input
-                type="date"
-                value={formData.target_selesai}
-                onChange={(e) => setFormData({...formData, target_selesai: e.target.value})}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-                required
-              />
-            </div>
-
             {/* Submit Button */}
             <div className="pt-4">
               <button
@@ -779,10 +764,31 @@ export default function DataKegiatan() {
                     </td>
                     <td className="border border-gray-200 px-4 py-2 text-sm">
                       <div className="text-xs">
-                        <div>{new Date(agenda.tanggal_mulai).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</div>
-                        <div>{new Date(agenda.tanggal_mulai).getFullYear()}</div>
-                        <div>{agenda.waktu_mulai}-</div>
-                        <div>{agenda.waktu_selesai || 'selesai'}</div>
+                        {(() => {
+                          const tanggalMulai = new Date(agenda.tanggal_mulai);
+                          const tanggalSelesai = new Date(agenda.tanggal_selesai);
+                          const isSameDay = tanggalMulai.toDateString() === tanggalSelesai.toDateString();
+                          
+                          if (isSameDay) {
+                            // Tampilkan satu tanggal saja
+                            return (
+                              <>
+                                <div>{tanggalMulai.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                                <div>{agenda.waktu_mulai} - {agenda.waktu_selesai || 'selesai'}</div>
+                              </>
+                            );
+                          } else {
+                            // Tampilkan tanggal mulai - tanggal selesai
+                            return (
+                              <>
+                                <div>
+                                  {tanggalMulai.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {tanggalSelesai.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                </div>
+                                <div>{agenda.waktu_mulai} - {agenda.waktu_selesai || 'selesai'}</div>
+                              </>
+                            );
+                          }
+                        })()}
                       </div>
                     </td>
                     
@@ -911,15 +917,25 @@ export default function DataKegiatan() {
                 </div>
                 <div className="mb-3">
                   <label className="block text-sm font-medium text-gray-700">Pertanggung Jawaban Keuangan</label>
-                  <div className="text-sm">: Paket Meeting</div>
+                  <div className="text-sm">
+                    : {selectedAgenda.pertanggung_jawaban.join(', ')}
+                  </div>
                 </div>
                 <div className="mb-3">
                   <label className="block text-sm font-medium text-gray-700">Pelaksanaan Kegiatan</label>
-                  <div className="text-sm">: 29 Apr 2025 | 09:00-selesai (WIB)</div>
-                </div>
-                <div className="mb-3">
-                  <label className="block text-sm font-medium text-gray-700">Target Waktu Penyelesaian Pekerjaan</label>
-                  <div className="text-sm">: 16 April 2025</div>
+                  <div className="text-sm">
+                    : {(() => {
+                      const tanggalMulai = new Date(selectedAgenda.tanggal_mulai);
+                      const tanggalSelesai = new Date(selectedAgenda.tanggal_selesai);
+                      const isSameDay = tanggalMulai.toDateString() === tanggalSelesai.toDateString();
+                      
+                      if (isSameDay) {
+                        return `${tanggalMulai.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })} | ${selectedAgenda.waktu_mulai} - ${selectedAgenda.waktu_selesai || 'selesai'} (WIB)`;
+                      } else {
+                        return `${tanggalMulai.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - ${tanggalSelesai.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })} | ${selectedAgenda.waktu_mulai} - ${selectedAgenda.waktu_selesai || 'selesai'} (WIB)`;
+                      }
+                    })()}
+                  </div>
                 </div>
               </div>
             </div>
