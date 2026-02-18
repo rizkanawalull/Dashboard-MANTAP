@@ -46,6 +46,7 @@ export default function DataKegiatan() {
     tanggal_selesai: string
     waktu_mulai: string
     waktu_selesai: string
+    pelaksanaan_kegiatan: string
     dokumen_teknis: string[]
     target_selesai: string
   }>({
@@ -60,6 +61,7 @@ export default function DataKegiatan() {
     tanggal_selesai: '',
     waktu_mulai: '',
     waktu_selesai: '',
+    pelaksanaan_kegiatan: '',
     dokumen_teknis: [],
     target_selesai: ''
   })
@@ -109,6 +111,7 @@ export default function DataKegiatan() {
           tanggal_selesai: formData.tanggal_selesai || null,
           waktu_mulai: formData.waktu_mulai || null,
           waktu_selesai: formData.waktu_selesai || null,
+          pelaksanaan_kegiatan: formData.pelaksanaan_kegiatan || null,
           dokumen: formData.dokumen_teknis,
           target_selesai: formData.target_selesai || null
         }
@@ -141,6 +144,7 @@ export default function DataKegiatan() {
           tanggal_selesai: formData.tanggal_selesai || null,
           waktu_mulai: formData.waktu_mulai || null,
           waktu_selesai: formData.waktu_selesai || null,
+          pelaksanaan_kegiatan: formData.pelaksanaan_kegiatan || null,
           dokumen: formData.dokumen_teknis,
           target_selesai: formData.target_selesai || null
         }
@@ -180,6 +184,7 @@ export default function DataKegiatan() {
       tanggal_selesai: '',
       waktu_mulai: '',
       waktu_selesai: '',
+      pelaksanaan_kegiatan: '',
       dokumen_teknis: [],
       target_selesai: ''
     })
@@ -205,6 +210,7 @@ export default function DataKegiatan() {
       tanggal_selesai: agenda.tanggal_selesai,
       waktu_mulai: agenda.waktu_mulai,
       waktu_selesai: agenda.waktu_selesai,
+      pelaksanaan_kegiatan: agenda.pelaksanaan_kegiatan || '',
       dokumen_teknis: agenda.dokumen,
       target_selesai: agenda.target_selesai
     })
@@ -253,6 +259,7 @@ export default function DataKegiatan() {
       tanggal_selesai: '',
       waktu_mulai: '',
       waktu_selesai: '',
+      pelaksanaan_kegiatan: '',
       dokumen_teknis: [],
       target_selesai: ''
     })
@@ -301,9 +308,6 @@ export default function DataKegiatan() {
       {/* Form Tambah Kegiatan */}
       {showForm && (
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <div className="flex items-center mb-4">
-            <span className="bg-yellow-400 text-black px-3 py-1 rounded text-sm">Kembali</span>
-          </div>
           <h2 className="text-xl font-semibold text-blue-600 mb-6">
             {isEditing ? 'Edit Kegiatan' : 'Tambah Kegiatan'}
           </h2>
@@ -444,11 +448,12 @@ export default function DataKegiatan() {
             {/* Pelaksanaan Kegiatan */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Pelaksanaan Kegiatan</label>
-              <input
-                type="text"
-                value="27-01-2026 - 27-01-2026"
+               <input
+                type="date"
+                value={formData.pelaksanaan_kegiatan}
+                onChange={(e) => setFormData({...formData, pelaksanaan_kegiatan: e.target.value})}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-                readOnly
+                required
               />
             </div>
 
@@ -758,7 +763,7 @@ export default function DataKegiatan() {
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">SUBSTANSI KEGIATAN</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">PELAKSANAAN KEGIATAN</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">PIC</th>
-                  <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">DATA PERTANGGUNG JAWABAN</th>
+                  <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">DOKUMEN PERTANGGUNG JAWABAN</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">AKSI</th>
                 </tr>
               </thead>
