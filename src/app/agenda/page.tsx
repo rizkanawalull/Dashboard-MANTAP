@@ -24,8 +24,8 @@ export default function DataKegiatan() {
   const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(null)
   const [agendas, setAgendas] = useState<Agenda[]>([])
   const [loading, setLoading] = useState(false)
-  const [currentMonth, setCurrentMonth] = useState('April')
-  const [currentYear, setCurrentYear] = useState('2025')
+  const [currentMonth, setCurrentMonth] = useState('')
+  const [currentYear, setCurrentYear] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [entriesPerPage, setEntriesPerPage] = useState(10)
   const [editingAgenda, setEditingAgenda] = useState<Agenda | null>(null)
@@ -711,15 +711,26 @@ export default function DataKegiatan() {
                   onChange={(e) => setCurrentMonth(e.target.value)}
                   className="border border-gray-300 rounded px-3 py-1 text-sm"
                 >
+                  <option value="">Semua</option>
+                  <option value="Januari">Januari</option>
+                  <option value="Februari">Februari</option>
+                  <option value="Maret">Maret</option>
                   <option value="April">April</option>
                   <option value="Mei">Mei</option>
                   <option value="Juni">Juni</option>
+                  <option value="Juli">Juli</option>
+                  <option value="Agustus">Agustus</option>
+                  <option value="September">September</option>
+                  <option value="Oktober">Oktober</option>
+                  <option value="November">November</option>
+                  <option value="Desember">Desember</option>
                 </select>
                 <select
                   value={currentYear}
                   onChange={(e) => setCurrentYear(e.target.value)}
                   className="border border-gray-300 rounded px-3 py-1 text-sm"
                 >
+                  <option value="">Semua</option>
                   <option value="2025">2025</option>
                   <option value="2026">2026</option>
                 </select>
@@ -753,7 +764,26 @@ export default function DataKegiatan() {
                 </tr>
               </thead>
               <tbody>
-                {agendas.slice(0, entriesPerPage).map((agenda, index) => (
+                {agendas
+                  .filter(agenda => {
+                    // Filter berdasarkan bulan dan tahun
+                    const agendaDate = new Date(agenda.tanggal_mulai);
+                    const agendaMonth = agendaDate.toLocaleDateString('id-ID', { month: 'long' });
+                    const monthCapitalized = agendaMonth.charAt(0).toUpperCase() + agendaMonth.slice(1);
+                    const agendaYear = agendaDate.getFullYear().toString();
+                    
+                    const matchMonth = currentMonth === '' || monthCapitalized === currentMonth;
+                    const matchYear = currentYear === '' || agendaYear === currentYear;
+                    
+                    // Filter berdasarkan search term
+                    const matchSearch = searchTerm === '' || 
+                      agenda.nama_kegiatan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      agenda.substansi_kegiatan.toLowerCase().includes(searchTerm.toLowerCase());
+                    
+                    return matchMonth && matchYear && matchSearch;
+                  })
+                  .slice(0, entriesPerPage)
+                  .map((agenda, index) => (
                   <tr key={agenda.id} className="hover:bg-gray-50">
                     <td className="border border-gray-200 px-4 py-2 text-sm">{index + 1}</td>
                     <td className="border border-gray-200 px-4 py-2 text-sm">

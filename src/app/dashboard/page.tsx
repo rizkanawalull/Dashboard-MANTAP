@@ -21,8 +21,8 @@ interface Agenda {
 }
 
 export default function Dashboard() {
-  const [currentMonth, setCurrentMonth] = useState(3) // April = 3 (0-indexed)
-  const [currentYear, setCurrentYear] = useState(2025)
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [selectedEvent, setSelectedEvent] = useState<Agenda | null>(null)
   const [agendas, setAgendas] = useState<Agenda[]>([])
 
@@ -143,6 +143,12 @@ export default function Dashboard() {
     }
   }
 
+  const goToToday = () => {
+    const today = new Date()
+    setCurrentMonth(today.getMonth())
+    setCurrentYear(today.getFullYear())
+  }
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="flex h-screen">
@@ -167,10 +173,7 @@ export default function Dashboard() {
                   →
                 </button>
                 <button 
-                  onClick={() => {
-                    setCurrentMonth(3) // April
-                    setCurrentYear(2025)
-                  }}
+                  onClick={goToToday}
                   className="px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300"
                 >
                   today
