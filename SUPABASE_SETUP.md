@@ -99,6 +99,46 @@ Buka browser console (F12) dan lihat:
 - Log dari `console.log('Inserting agenda:', newAgenda)`
 - Log dari `console.log('Insert result:', { data, error })`
 
+## 6. Setup Storage Bucket untuk Dokumen
+
+### a. Buat Storage Bucket
+
+1. Buka Supabase Dashboard
+2. Pergi ke **Storage** di sidebar
+3. Klik **Create a new bucket**
+4. Isi form:
+   - **Name**: `documents`
+   - **Public bucket**: Centang (untuk akses publik)
+5. Klik **Create bucket**
+
+### b. Set Storage Policies (Opsional)
+
+Untuk kontrol akses lebih baik, jalankan SQL berikut:
+
+```sql
+-- Allow public to upload files
+CREATE POLICY "Allow public to upload documents"
+  ON storage.objects FOR INSERT
+  TO public
+  WITH CHECK (bucket_id = 'documents');
+
+-- Allow public to read files
+CREATE POLICY "Allow public to read documents"
+  ON storage.objects FOR SELECT
+  TO public
+  USING (bucket_id = 'documents');
+
+-- Allow public to delete files
+CREATE POLICY "Allow public to delete documents"
+  ON storage.objects FOR DELETE
+  TO public
+  USING (bucket_id = 'documents');
+```
+
+### c. Verifikasi Upload
+
+Setelah upload dokumen dari aplikasi, cek di **Storage > documents** untuk melihat file yang diunggah.
+
 ## Troubleshooting
 
 ### Error: "new row violates row-level security policy"

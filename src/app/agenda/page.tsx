@@ -31,6 +31,11 @@ export default function DataKegiatan() {
   const [editingAgenda, setEditingAgenda] = useState<Agenda | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<{[key: string]: File[]}>({}) // State untuk file upload
+  
+  // Detail view upload states
+  const [detailDocType, setDetailDocType] = useState('')
+  const [detailFile, setDetailFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
 
   // Form states
   const [formData, setFormData] = useState<{
@@ -87,11 +92,54 @@ export default function DataKegiatan() {
     }
   }
 
+  // Function to upload file to Supabase Storage
+  const uploadFileToStorage = async (file: File, docType: string): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${docType}-${Date.now()}.${fileExt}`
+      const filePath = fileName
+
+      const { error } = await supabase.storage
+        .from('agenda-documents')
+        .upload(filePath, file)
+
+      if (error) {
+        console.error('Upload error:', error)
+        throw error
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('agenda-documents')
+        .getPublicUrl(filePath)
+
+      return urlData.publicUrl
+    } catch (error) {
+      console.error('Error uploading file:', error)
+      return null
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     try {
+      // Upload files to storage first
+      const uploadedDocUrls: string[] = []
+      
+      for (const [docType, files] of Object.entries(uploadedFiles)) {
+        for (const file of files) {
+          const url = await uploadFileToStorage(file, docType)
+          if (url) {
+            uploadedDocUrls.push(url)
+          }
+        }
+      }
+
+      // Combine with existing dokumen_teknis
+      const allDokumen = [...formData.dokumen_teknis, ...uploadedDocUrls]
+
       if (isEditing && editingAgenda) {
         // Update existing agenda in Supabase
         const updatedData = {
@@ -106,7 +154,7 @@ export default function DataKegiatan() {
           tanggal_selesai: formData.tanggal_selesai || null,
           waktu_mulai: formData.waktu_mulai || null,
           waktu_selesai: formData.waktu_selesai || null,
-          dokumen: formData.dokumen_teknis
+          dokumen: allDokumen
         }
         
         console.log('Updating agenda:', updatedData)
@@ -137,7 +185,7 @@ export default function DataKegiatan() {
           tanggal_selesai: formData.tanggal_selesai || null,
           waktu_mulai: formData.waktu_mulai || null,
           waktu_selesai: formData.waktu_selesai || null,
-          dokumen: formData.dokumen_teknis
+          dokumen: allDokumen
         }
         
         console.log('Inserting agenda:', newAgenda)
@@ -268,6 +316,56 @@ export default function DataKegiatan() {
     }))
   }
 
+  // Handler for detail view upload
+  const handleDetailUpload = async () => {
+    if (!detailFile || !detailDocType) {
+      alert('Silakan pilih jenis dokumen dan file terlebih dahulu')
+      return
+    }
+
+    if (!selectedAgenda) return
+
+    setUploading(true)
+    try {
+      // Upload file to storage
+      const url = await uploadFileToStorage(detailFile, detailDocType)
+      
+      if (!url) {
+        throw new Error('Gagal mengupload file')
+      }
+
+      // Update agenda with new document URL
+      const updatedDokumen = [...(selectedAgenda.dokumen || []), url]
+      
+      const { error } = await supabase
+        .from('agendas')
+        .update({ dokumen: updatedDokumen })
+        .eq('id', selectedAgenda.id)
+
+      if (error) throw error
+
+      alert('Dokumen berhasil diunggah!')
+      
+      // Update selected agenda
+      setSelectedAgenda({
+        ...selectedAgenda,
+        dokumen: updatedDokumen
+      })
+
+      // Clear form
+      setDetailDocType('')
+      setDetailFile(null)
+      
+      // Refresh agendas
+      await fetchAgendas()
+    } catch (error: any) {
+      console.error('Error uploading document:', error)
+      alert(`Gagal mengupload dokumen: ${error.message}`)
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Header */}
@@ -280,13 +378,15 @@ export default function DataKegiatan() {
           onClick={() => {
             if (showForm && isEditing) {
               handleCancelEdit()
+            } else if (selectedAgenda) {
+              setSelectedAgenda(null)
             } else {
               setShowForm(!showForm)
             }
           }}
           className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
         >
-          {showForm ? 'Kembali' : 'Tambah'}
+          {(showForm || selectedAgenda) ? 'Kembali' : 'Tambah'}
         </button>
       </div>
 
@@ -760,6 +860,7 @@ export default function DataKegiatan() {
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">PELAKSANAAN KEGIATAN</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">PIC</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">DOKUMEN PERTANGGUNG JAWABAN</th>
+                  <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">DOKUMEN</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">AKSI</th>
                 </tr>
               </thead>
@@ -843,13 +944,30 @@ export default function DataKegiatan() {
                         ) : (
                           <div className="text-gray-400">-</div>
                         )}
-                        {agenda.dokumen && agenda.dokumen.length > 0 && (
-                          <div className="mt-2 pt-2 border-t border-gray-200">
-                            <div className="font-semibold mb-1">Dokumen:</div>
-                            {agenda.dokumen.map((doc, idx) => (
-                              <div key={idx} className="text-green-500">✓ {doc}</div>
-                            ))}
-                          </div>
+                      </div>
+                    </td>
+                    <td className="border border-gray-200 px-4 py-2 text-sm">
+                      <div className="space-y-1 text-xs">
+                        {agenda.dokumen && agenda.dokumen.length > 0 ? (
+                          agenda.dokumen.map((doc, idx) => {
+                            const filename = doc.split('/').pop() || `Dokumen ${idx + 1}`
+                            const displayName = filename.length > 30 ? filename.substring(0, 27) + '...' : filename
+                            return (
+                              <div key={idx}>
+                                <a 
+                                  href={doc} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
+                                  title={filename}
+                                >
+                                  📄 {displayName}
+                                </a>
+                              </div>
+                            )
+                          })
+                        ) : (
+                          <div className="text-gray-400">-</div>
                         )}
                       </div>
                     </td>
@@ -891,15 +1009,6 @@ export default function DataKegiatan() {
       {/* Detail Kegiatan */}
       {selectedAgenda && (
         <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center mb-4">
-            <button
-              onClick={() => setSelectedAgenda(null)}
-              className="bg-yellow-400 text-black px-3 py-1 rounded text-sm mr-4"
-            >
-              Kembali
-            </button>
-          </div>
-          
           <h2 className="text-xl font-semibold text-blue-600 mb-6">Detail Kegiatan</h2>
           
           <div className="space-y-4">
@@ -912,10 +1021,6 @@ export default function DataKegiatan() {
                 <div className="mb-3">
                   <label className="block text-sm font-medium text-gray-700">Deskripsi</label>
                   <div className="text-sm">: {selectedAgenda.deskripsi}</div>
-                </div>
-                <div className="mb-3">
-                  <label className="block text-sm font-medium text-gray-700">Pembuat</label>
-                  <div className="text-sm">: Perwita Sari</div>
                 </div>
                 <div className="mb-3">
                   <label className="block text-sm font-medium text-gray-700">Jenis Tugas</label>
@@ -971,22 +1076,89 @@ export default function DataKegiatan() {
             </div>
 
             <div className="mt-6">
-              <h3 className="text-lg font-semibold text-blue-600 mb-4">Daftar Berkas Kegiatan</h3>              
+              <h3 className="text-lg font-semibold text-blue-600 mb-4">Daftar Berkas Kegiatan</h3>
+              
+              {/* Display uploaded documents */}
+              {selectedAgenda.dokumen && selectedAgenda.dokumen.length > 0 ? (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Dokumen yang Sudah Diunggah:</label>
+                  <div className="space-y-2">
+                    {selectedAgenda.dokumen.map((doc, idx) => {
+                      // Extract filename from URL
+                      const filename = doc.split('/').pop() || doc
+                      return (
+                        <div key={idx} className="flex items-center justify-between bg-gray-50 p-3 rounded border">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-green-500 text-lg">✓</span>
+                            <span className="text-sm text-gray-700">{filename}</span>
+                          </div>
+                          <a 
+                            href={doc} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:text-blue-700 underline text-sm"
+                          >
+                            📄 Lihat Dokumen
+                          </a>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-4">
+                  <p className="text-sm text-gray-500">Belum ada dokumen yang diunggah.</p>
+                </div>
+              )}
+              
               <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Form Unggah Berkas</label>
                 <div className="flex items-center space-x-4">
-                  <select className="border border-gray-300 rounded px-3 py-2 text-sm">
-                    <option>Daftar Hadir</option>
+                  <select 
+                    className="border border-gray-300 rounded px-3 py-2 text-sm"
+                    value={detailDocType}
+                    onChange={(e) => setDetailDocType(e.target.value)}
+                  >
+                    <option value="">Pilih Jenis Dokumen</option>
+                    <option value="berita-acara">Berita Acara Pembahasan Modul</option>
+                    <option value="dokumen-evaluasi">Dokumen Evaluasi alat Bantu</option>
+                    <option value="dokumen-visualisasi">Dokumen Visualisasi Alat bantu</option>
+                    <option value="modul-diklat">Modul Diklat</option>
+                    <option value="surat-pemanfaatan">Surat keterangan pemanfaatan</option>
+                    <option value="surat-narsum">Surat Permohonan Narsum</option>
+                    <option value="surat-nodin">Surat/NoDin penyampaian</option>
+                    <option value="daftar-hadir">Daftar Hadir</option>
+                    <option value="dokumen-kak">Dokumen KAK</option>
+                    <option value="bahan-paparan">Dokumen/Bahan Paparan</option>
+                    <option value="notulensi">Notulensi Rapat</option>
+                    <option value="surat-sertifikat">Surat keterangan/sertifikat</option>
+                    <option value="surat-pelaksanaan">Surat Pernyataan Melaksanakan Kegiatan</option>
+                    <option value="nota-dinas">Surat/Nota Dinas Pimpinan</option>
+                    <option value="daftar-konsultasi">Daftar konsultasi dan hasil konsultasi</option>
+                    <option value="dokumen-rab">Dokumen RAB</option>
+                    <option value="hasil-konsultasi">Hasil Konsultasi</option>
+                    <option value="sk-penugasan">SK Penugasan</option>
+                    <option value="surat-kegiatan">Surat Pelaksanaan Kegiatan</option>
+                    <option value="surat-telaah">Surat Telaah ke pimpinan</option>
+                    <option value="undangan">Undangan Rapat/Kegiatan Penyusunan</option>
                   </select>
                   <input 
                     type="file" 
                     className="border border-gray-300 rounded px-3 py-2 text-sm"
-                    placeholder="Choose File"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    onChange={(e) => setDetailFile(e.target.files?.[0] || null)}
                   />
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600">
-                    Unggah
+                  <button 
+                    onClick={handleDetailUpload}
+                    disabled={uploading || !detailFile || !detailDocType}
+                    className="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    {uploading ? 'Mengupload...' : 'Unggah'}
                   </button>
                 </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 5MB per file)
+                </p>
               </div>
             </div>
           </div>

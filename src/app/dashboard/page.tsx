@@ -204,17 +204,12 @@ export default function Dashboard() {
           <div className="bg-white rounded-lg shadow-md h-full">
             {selectedEvent ? (
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-blue-600 mb-4">Detil Kegiatan</h3>
+                <h3 className="text-lg font-semibold text-blue-600 mb-4">Detail Kegiatan</h3>
                 
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Nama Kegiatan</label>
                     <div className="text-sm text-gray-900 mt-1">{selectedEvent.nama_kegiatan}</div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Pembuat</label>
-                    <div className="text-sm text-gray-900 mt-1">Perwita Sari</div>
                   </div>
 
                   <div>
