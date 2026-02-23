@@ -486,7 +486,7 @@ export default function DataKegiatan() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Pelaksana Kegiatan</label>
               <div className="grid grid-cols-2 gap-4">
-                {['Desti', 'Aisyah', 'Mutia', 'Kevin', 'Andi', 'Kharisma', 'Nana', 'Evan', 'Citra' ].map((name) => (
+                {['Mba Desti', 'Mba Aisyah', 'Mba Mutia', 'Mas Kevin', 'Mas Andi', 'Mba Kharisma', 'Mba Nana', 'Mas Evan', 'Mba Citra' ].map((name) => (
                   <label key={name} className="flex items-center text-sm">
                     <input 
                       type="checkbox" 
@@ -858,7 +858,7 @@ export default function DataKegiatan() {
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">NAMA KEGIATAN</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">SUBSTANSI KEGIATAN</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">PELAKSANAAN KEGIATAN</th>
-                  <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">PIC</th>
+                  <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium min-w-[150px]">PIC</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">DOKUMEN PERTANGGUNG JAWABAN</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">DOKUMEN</th>
                   <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium">AKSI</th>
@@ -924,8 +924,8 @@ export default function DataKegiatan() {
                     </td>
                     
 
-                    <td className="border border-gray-200 px-4 py-2 text-sm">
-                      <div className="space-y-1 text-xs">
+                    <td className="border border-gray-200 px-4 py-2 text-sm min-w-[150px]">
+                      <div className="space-y-1 text-xs whitespace-nowrap">
                         {agenda.pelaksana && agenda.pelaksana.length > 0 ? (
                           agenda.pelaksana.map((p, idx) => (
                             <div key={idx}>• {p}</div>

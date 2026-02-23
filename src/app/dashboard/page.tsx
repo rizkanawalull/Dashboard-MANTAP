@@ -100,11 +100,16 @@ export default function Dashboard() {
     }
 
     // Days of current month
+    const today = new Date()
+    const isCurrentMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear
+    
     for (let date = 1; date <= daysInMonth; date++) {
       const events = getEventsForDate(date)
+      const isToday = isCurrentMonth && date === today.getDate()
+      const bgColor = isToday ? 'bg-blue-100' : 'bg-white'
       
       days.push(
-        <div key={date} className="h-24 p-1 bg-white border border-gray-200 overflow-hidden">
+        <div key={date} className={`h-24 p-1 ${bgColor} border border-gray-200 overflow-hidden hover:bg-gray-50 transition-colors cursor-pointer`}>
           <div className="text-sm font-medium mb-1">{date}</div>
           <div className="space-y-1">
             {events.map((event, idx) => (
@@ -263,10 +268,23 @@ export default function Dashboard() {
                     <label className="block text-sm font-medium text-gray-700">Daftar Dokumen</label>
                     <div className="text-sm text-gray-900 mt-1">
                       {selectedEvent.dokumen.length > 0 ? (
-                        <ul className="list-disc list-inside">
-                          {selectedEvent.dokumen.map((doc, idx) => (
-                            <li key={idx}>{doc}</li>
-                          ))}
+                        <ul className="space-y-1">
+                          {selectedEvent.dokumen.map((doc, idx) => {
+                            const filename = doc.split('/').pop() || `Dokumen ${idx + 1}`
+                            return (
+                              <li key={idx}>
+                                <a 
+                                  href={doc} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
+                                  title={filename}
+                                >
+                                  📄 {filename}
+                                </a>
+                              </li>
+                            )
+                          })}
                         </ul>
                       ) : (
                         'data tidak ditemukan'
