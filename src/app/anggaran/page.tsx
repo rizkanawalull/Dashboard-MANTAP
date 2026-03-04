@@ -29,7 +29,8 @@ interface TagihanData {
 }
 
 export default function MonitoringTagihan() {
-  const [data] = useState<TagihanData[]>([
+  const [showForm, setShowForm] = useState(false)
+  const [data, setData] = useState<TagihanData[]>([
     {
       id: 1,
       no_bukti: '48 / 03-03-2026',
@@ -197,6 +198,104 @@ export default function MonitoringTagihan() {
   const [jumlahTagihan, setJumlahTagihan] = useState('Semua')
   const [bulan, setBulan] = useState('Semua')
 
+  // Form data state
+  const [formData, setFormData] = useState({
+    no_bukti: '',
+    tgl_bukti: '',
+    no_spby: '',
+    tgl_spby: '',
+    no_sptb: '',
+    tgl_sptb: '',
+    no_spp: '',
+    tgl_spp: '',
+    no_spm: '',
+    tgl_spm: '',
+    no_sp2d: '',
+    tgl_sp2d: '',
+    nama_penerima: '',
+    uraian: '',
+    sifat_pembayaran: 'Penggantian UP (GUP)',
+    jumlah_uang: '',
+    ppn: '',
+    pph_21: '',
+    pph_22: '',
+    pph_23: '',
+    pph_24: '',
+    status: 'Kuitansi',
+    direktorat: '(1103) Asisten Deputi Manajemen Transformasi Digital Pemerin'
+  })
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    const newTagihan: TagihanData = {
+      id: data.length + 1,
+      no_bukti: formData.no_bukti,
+      tgl_bukti: formData.tgl_bukti,
+      no_spby: formData.no_spby,
+      tgl_spby: formData.tgl_spby,
+      no_sptb: formData.no_sptb,
+      tgl_sptb: formData.tgl_sptb,
+      no_spp: formData.no_spp,
+      tgl_spp: formData.tgl_spp,
+      no_spm: formData.no_spm,
+      tgl_spm: formData.tgl_spm,
+      no_sp2d: formData.no_sp2d,
+      tgl_sp2d: formData.tgl_sp2d,
+      nama_penerima: formData.nama_penerima,
+      uraian: formData.uraian,
+      sifat_pembayaran: formData.sifat_pembayaran,
+      jumlah_uang: parseFloat(formData.jumlah_uang) || 0,
+      ppn: parseFloat(formData.ppn) || 0,
+      pph_21: parseFloat(formData.pph_21) || 0,
+      pph_22: parseFloat(formData.pph_22) || 0,
+      pph_23: parseFloat(formData.pph_23) || 0,
+      pph_24: parseFloat(formData.pph_24) || 0,
+      status: formData.status,
+      direktorat: formData.direktorat
+    }
+
+    setData([newTagihan, ...data])
+    setShowForm(false)
+    
+    // Reset form
+    setFormData({
+      no_bukti: '',
+      tgl_bukti: '',
+      no_spby: '',
+      tgl_spby: '',
+      no_sptb: '',
+      tgl_sptb: '',
+      no_spp: '',
+      tgl_spp: '',
+      no_spm: '',
+      tgl_spm: '',
+      no_sp2d: '',
+      tgl_sp2d: '',
+      nama_penerima: '',
+      uraian: '',
+      sifat_pembayaran: 'Penggantian UP (GUP)',
+      jumlah_uang: '',
+      ppn: '',
+      pph_21: '',
+      pph_22: '',
+      pph_23: '',
+      pph_24: '',
+      status: 'Kuitansi',
+      direktorat: '(1103) Asisten Deputi Manajemen Transformasi Digital Pemerin'
+    })
+    
+    alert('Data tagihan berhasil ditambahkan!')
+  }
+
   const filteredData = useMemo(() => {
     let filtered = [...data]
 
@@ -289,7 +388,411 @@ export default function MonitoringTagihan() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Monitoring Tagihan</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">Monitoring Tagihan</h1>
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          {showForm ? 'Tutup Form' : 'Tambah Tagihan Baru'}
+        </button>
+      </div>
+
+      {/* Form Input Tagihan */}
+      {showForm && (
+        <div className="bg-white p-6 rounded-lg shadow mb-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Form Input Tagihan Baru</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+              {/* No Bukti */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  No Bukti <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="no_bukti"
+                  value={formData.no_bukti}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="48 / 03-03-2026"
+                />
+              </div>
+
+              {/* Tanggal Bukti */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tanggal Bukti <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="tgl_bukti"
+                  value={formData.tgl_bukti}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="03-03-2026"
+                />
+              </div>
+
+              {/* No SPBy */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  No SPBy
+                </label>
+                <input
+                  type="text"
+                  name="no_spby"
+                  value={formData.no_spby}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="42 / 03-03-2026"
+                />
+              </div>
+
+              {/* Tanggal SPBy */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tanggal SPBy
+                </label>
+                <input
+                  type="text"
+                  name="tgl_spby"
+                  value={formData.tgl_spby}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="03-03-2026"
+                />
+              </div>
+
+              {/* No SPTB */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  No SPTB
+                </label>
+                <input
+                  type="text"
+                  name="no_sptb"
+                  value={formData.no_sptb}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="255 / 03-03-2026"
+                />
+              </div>
+
+              {/* Tanggal SPTB */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tanggal SPTB
+                </label>
+                <input
+                  type="text"
+                  name="tgl_sptb"
+                  value={formData.tgl_sptb}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="03-03-2026"
+                />
+              </div>
+
+              {/* No SPP */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  No SPP
+                </label>
+                <input
+                  type="text"
+                  name="no_spp"
+                  value={formData.no_spp}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="42 / 02-03-2026"
+                />
+              </div>
+
+              {/* Tanggal SPP */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tanggal SPP
+                </label>
+                <input
+                  type="text"
+                  name="tgl_spp"
+                  value={formData.tgl_spp}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="02-03-2026"
+                />
+              </div>
+
+              {/* No SPM */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  No SPM
+                </label>
+                <input
+                  type="text"
+                  name="no_spm"
+                  value={formData.no_spm}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="50 / 01-03-2026"
+                />
+              </div>
+
+              {/* Tanggal SPM */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tanggal SPM
+                </label>
+                <input
+                  type="text"
+                  name="tgl_spm"
+                  value={formData.tgl_spm}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="01-03-2026"
+                />
+              </div>
+
+              {/* No SP2D */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  No SP2D
+                </label>
+                <input
+                  type="text"
+                  name="no_sp2d"
+                  value={formData.no_sp2d}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="100 / 04-03-2026"
+                />
+              </div>
+
+              {/* Tanggal SP2D */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tanggal SP2D
+                </label>
+                <input
+                  type="text"
+                  name="tgl_sp2d"
+                  value={formData.tgl_sp2d}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="04-03-2026"
+                />
+              </div>
+
+              {/* Nama Penerima */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nama Penerima <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="nama_penerima"
+                  value={formData.nama_penerima}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Nama penerima"
+                />
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Status <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Kuitansi">Kuitansi</option>
+                  <option value="SPTB">SPTB</option>
+                  <option value="SPP">SPP</option>
+                  <option value="SPM/SP2D">SPM/SP2D</option>
+                </select>
+              </div>
+
+              {/* Uraian */}
+              <div className="md:col-span-3">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Uraian <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  name="uraian"
+                  value={formData.uraian}
+                  onChange={handleInputChange}
+                  required
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Deskripsi lengkap tagihan..."
+                />
+              </div>
+
+              {/* Sifat Pembayaran */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sifat Pembayaran <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="sifat_pembayaran"
+                  value={formData.sifat_pembayaran}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Dana Uang Persediaan (UP)">Dana Uang Persediaan (UP)</option>
+                  <option value="Tambahan UP (TUP)">Tambahan UP (TUP)</option>
+                  <option value="Penggantian UP (GUP)">Penggantian UP (GUP)</option>
+                  <option value="Pembayaran Langsung (LS) Pihak Ketiga">Pembayaran Langsung (LS) Pihak Ketiga</option>
+                  <option value="Penggantian UP KKP (GUP KKP)">Penggantian UP KKP (GUP KKP)</option>
+                  <option value="Pertanggungjawaban TUP (PTUP)">Pertanggungjawaban TUP (PTUP)</option>
+                  <option value="Perigesahan">Perigesahan</option>
+                  <option value="Pembayaran Langsung (LS) Bendahara">Pembayaran Langsung (LS) Bendahara</option>
+                  <option value="Pertanggungjawaban TUP KKP (PTUP KKP)">Pertanggungjawaban TUP KKP (PTUP KKP)</option>
+                </select>
+              </div>
+
+              {/* Direktorat */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Direktorat <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="direktorat"
+                  value={formData.direktorat}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="(1103) Asisten Deputi Manajemen Transformasi Digital Pemerin">
+                    (1103) Asisten Deputi Manajemen Transformasi Digital Pemerin
+                  </option>
+                </select>
+              </div>
+
+              {/* Jumlah Uang */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Jumlah Uang (Rp) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="jumlah_uang"
+                  value={formData.jumlah_uang}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="0"
+                />
+              </div>
+
+              {/* PPn */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  PPn (Rp)
+                </label>
+                <input
+                  type="number"
+                  name="ppn"
+                  value={formData.ppn}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="0"
+                />
+              </div>
+
+              {/* PPh 21 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  PPh 21 (Rp)
+                </label>
+                <input
+                  type="number"
+                  name="pph_21"
+                  value={formData.pph_21}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="0"
+                />
+              </div>
+
+              {/* PPh 22 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  PPh 22 (Rp)
+                </label>
+                <input
+                  type="number"
+                  name="pph_22"
+                  value={formData.pph_22}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="0"
+                />
+              </div>
+
+              {/* PPh 23 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  PPh 23 (Rp)
+                </label>
+                <input
+                  type="number"
+                  name="pph_23"
+                  value={formData.pph_23}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="0"
+                />
+              </div>
+
+              {/* PPh 24 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  PPh 24 (Rp)
+                </label>
+                <input
+                  type="number"
+                  name="pph_24"
+                  value={formData.pph_24}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="0"
+                />
+              </div>
+            </div>
+
+            {/* Form Actions */}
+            <div className="flex justify-end gap-4 mt-6">
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+              >
+                Simpan Tagihan
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
       
       {/* Filter Section */}
       <div className="bg-white p-6 rounded-lg shadow mb-6">
