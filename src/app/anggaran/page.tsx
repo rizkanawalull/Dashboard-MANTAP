@@ -198,6 +198,12 @@ export default function MonitoringTagihan() {
   const [jumlahTagihan, setJumlahTagihan] = useState('Semua')
   const [bulan, setBulan] = useState('Semua')
 
+  // Get today's date in YYYY-MM-DD format for date inputs
+  const getTodayDate = () => {
+    const today = new Date()
+    return today.toISOString().split('T')[0]
+  }
+
   // Form data state
   const [formData, setFormData] = useState({
     no_bukti: '',
@@ -233,23 +239,30 @@ export default function MonitoringTagihan() {
     }))
   }
 
+  // Helper function to convert date from YYYY-MM-DD to DD-MM-YYYY
+  const formatDateForDisplay = (dateStr: string) => {
+    if (!dateStr) return ''
+    const [year, month, day] = dateStr.split('-')
+    return `${day}-${month}-${year}`
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
     const newTagihan: TagihanData = {
       id: data.length + 1,
       no_bukti: formData.no_bukti,
-      tgl_bukti: formData.tgl_bukti,
+      tgl_bukti: formatDateForDisplay(formData.tgl_bukti),
       no_spby: formData.no_spby,
-      tgl_spby: formData.tgl_spby,
+      tgl_spby: formatDateForDisplay(formData.tgl_spby),
       no_sptb: formData.no_sptb,
-      tgl_sptb: formData.tgl_sptb,
+      tgl_sptb: formatDateForDisplay(formData.tgl_sptb),
       no_spp: formData.no_spp,
-      tgl_spp: formData.tgl_spp,
+      tgl_spp: formatDateForDisplay(formData.tgl_spp),
       no_spm: formData.no_spm,
-      tgl_spm: formData.tgl_spm,
+      tgl_spm: formatDateForDisplay(formData.tgl_spm),
       no_sp2d: formData.no_sp2d,
-      tgl_sp2d: formData.tgl_sp2d,
+      tgl_sp2d: formatDateForDisplay(formData.tgl_sp2d),
       nama_penerima: formData.nama_penerima,
       uraian: formData.uraian,
       sifat_pembayaran: formData.sifat_pembayaran,
@@ -429,13 +442,13 @@ export default function MonitoringTagihan() {
                   Tanggal Bukti <span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="text"
+                  type="date"
                   name="tgl_bukti"
                   value={formData.tgl_bukti}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="03-03-2026"
+                  max={getTodayDate()}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 />
               </div>
 
@@ -460,12 +473,12 @@ export default function MonitoringTagihan() {
                   Tanggal SPBy
                 </label>
                 <input
-                  type="text"
+                  type="date"
                   name="tgl_spby"
                   value={formData.tgl_spby}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="03-03-2026"
+                  max={getTodayDate()}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 />
               </div>
 
@@ -490,12 +503,12 @@ export default function MonitoringTagihan() {
                   Tanggal SPTB
                 </label>
                 <input
-                  type="text"
+                  type="date"
                   name="tgl_sptb"
                   value={formData.tgl_sptb}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="03-03-2026"
+                  max={getTodayDate()}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 />
               </div>
 
@@ -520,12 +533,12 @@ export default function MonitoringTagihan() {
                   Tanggal SPP
                 </label>
                 <input
-                  type="text"
+                  type="date"
                   name="tgl_spp"
                   value={formData.tgl_spp}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="02-03-2026"
+                  max={getTodayDate()}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 />
               </div>
 
@@ -550,12 +563,12 @@ export default function MonitoringTagihan() {
                   Tanggal SPM
                 </label>
                 <input
-                  type="text"
+                  type="date"
                   name="tgl_spm"
                   value={formData.tgl_spm}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="01-03-2026"
+                  max={getTodayDate()}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 />
               </div>
 
@@ -580,12 +593,12 @@ export default function MonitoringTagihan() {
                   Tanggal SP2D
                 </label>
                 <input
-                  type="text"
+                  type="date"
                   name="tgl_sp2d"
                   value={formData.tgl_sp2d}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="04-03-2026"
+                  max={getTodayDate()}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 />
               </div>
 
