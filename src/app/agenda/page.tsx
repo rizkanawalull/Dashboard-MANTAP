@@ -418,7 +418,6 @@ export default function DataKegiatan() {
                 value={formData.deskripsi}
                 onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm h-20"
-                required
               />
             </div>
 
@@ -429,7 +428,6 @@ export default function DataKegiatan() {
                 value={formData.substansi_kegiatan}
                 onChange={(e) => setFormData({...formData, substansi_kegiatan: e.target.value})}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-                required
               >
                 <option value="">-- data lama --</option>
                 <option value="Penyusunan Arsitektur dan Peta Rencana Pemerintah Digital">Penyusunan Arsitektur dan Peta Rencana Pemerintah Digital</option>
@@ -473,7 +471,6 @@ export default function DataKegiatan() {
                 value={formData.jenis_kegiatan}
                 onChange={(e) => setFormData({...formData, jenis_kegiatan: e.target.value})}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-                required
               >
                 <option value="">-- Pilih Jenis Tugas Terlebih Dahulu --</option>
                 <option value="Konsinyering">Konsinyering</option>
