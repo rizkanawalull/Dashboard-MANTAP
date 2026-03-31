@@ -473,9 +473,9 @@ export default function DataKegiatan() {
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
               >
                 <option value="">-- Pilih Jenis Tugas Terlebih Dahulu --</option>
-                <option value="Konsinyering">Konsinyering</option>
-                <option value="Koordinasi">Koordinasi</option>
-                <option value="Pembahasan">Pembahasan</option>
+                <option value="Konsinyering">Arsitektur Pemerintah Digital</option>
+                <option value="Koordinasi">Manajemen Layanan Digital</option>
+                <option value="Pembahasan">Kompetensi Layanan Digital</option>
               </select>
             </div>
 

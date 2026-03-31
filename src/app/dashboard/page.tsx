@@ -80,6 +80,44 @@ export default function Dashboard() {
     )
   }
 
+  const isNationalHolidayEvent = (event: Agenda) => {
+    const namaKegiatan = (event.nama_kegiatan || '').toLowerCase()
+    return namaKegiatan.includes('libur nasional') || namaKegiatan.includes('hari libur') || namaKegiatan.includes('libur')
+  }
+
+  const getEventBadgeColor = (event: Agenda) => {
+    const namaKegiatan = (event.nama_kegiatan || '').toLowerCase()
+    const substansiKegiatan = (event.substansi_kegiatan || '').toLowerCase()
+    const jenisKegiatan = (event.jenis_kegiatan || '').toLowerCase()
+    const searchableText = `${namaKegiatan} ${substansiKegiatan} ${jenisKegiatan}`
+
+    if (isNationalHolidayEvent(event)) {
+      return 'bg-red-500 hover:bg-red-600'
+    }
+
+    if (
+      substansiKegiatan.includes('kompetensi') ||
+      substansiKegiatan.includes('kompeetnsi') ||
+      substansiKegiatan.includes('budaya digital') ||
+      jenisKegiatan.includes('pembahasan') ||
+      searchableText.includes('kompetensi') ||
+      searchableText.includes('kompeetnsi') ||
+      searchableText.includes('budaya digital')
+    ) {
+      return 'bg-red-500 hover:bg-red-600'
+    }
+
+    if (substansiKegiatan.includes('manajemen') || jenisKegiatan.includes('koordinasi') || searchableText.includes('manajemen')) {
+      return 'bg-blue-500 hover:bg-blue-600'
+    }
+
+    if (substansiKegiatan.includes('arsitektur') || jenisKegiatan.includes('konsinyering') || searchableText.includes('arsitektur')) {
+      return 'bg-black hover:bg-gray-800'
+    }
+
+    return 'bg-blue-500 hover:bg-blue-600'
+  }
+
   const renderCalendar = () => {
     const daysInMonth = getDaysInMonth(currentMonth, currentYear)
     const firstDay = getFirstDayOfMonth(currentMonth, currentYear)
@@ -106,25 +144,20 @@ export default function Dashboard() {
     for (let date = 1; date <= daysInMonth; date++) {
       const events = getEventsForDate(date)
       const isToday = isCurrentMonth && date === today.getDate()
-      const bgColor = isToday ? 'bg-blue-100' : 'bg-white'
-      const isHoliday = events.some((event) =>
-        event.nama_kegiatan.toLowerCase().includes('libur')
-      )
+      const isHoliday = events.some((event) => isNationalHolidayEvent(event))
+      const bgColor = isToday ? 'bg-blue-100' : isHoliday ? 'bg-red-50' : 'bg-white'
+      const borderColor = isHoliday ? 'border-red-200' : 'border-gray-200'
       const dateTextColor = isHoliday ? 'text-red-600' : 'text-gray-900'
       
       days.push(
-        <div key={date} className={`h-24 p-1 ${bgColor} border border-gray-200 overflow-hidden hover:bg-gray-50 transition-colors cursor-pointer`}>
+        <div key={date} className={`h-24 p-1 ${bgColor} border ${borderColor} overflow-hidden hover:bg-gray-50 transition-colors cursor-pointer`}>
           <div className={`text-sm font-medium mb-1 ${dateTextColor}`}>{date}</div>
           <div className="space-y-1">
             {events.map((event, idx) => (
               <div
                 key={`${event.id}-${idx}`}
                 onClick={() => setSelectedEvent(event)}
-                className={`text-xs text-white px-1 py-0.5 rounded cursor-pointer truncate ${
-                  event.nama_kegiatan.toLowerCase().includes('libur')
-                    ? 'bg-red-500 hover:bg-red-600'
-                    : 'bg-blue-500 hover:bg-blue-600'
-                }`}
+                className={`text-xs text-white px-1 py-0.5 rounded cursor-pointer truncate ${getEventBadgeColor(event)}`}
                 title={event.nama_kegiatan}
               >
                 {event.nama_kegiatan.length > 20 ? event.nama_kegiatan.substring(0, 20) + '...' : event.nama_kegiatan}
