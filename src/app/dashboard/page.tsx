@@ -154,14 +154,22 @@ export default function Dashboard() {
           <div className={`text-sm font-medium mb-1 ${dateTextColor}`}>{date}</div>
           <div className="space-y-1">
             {events.map((event, idx) => (
-              <div
-                key={`${event.id}-${idx}`}
-                onClick={() => setSelectedEvent(event)}
-                className={`text-xs text-white px-1 py-0.5 rounded cursor-pointer truncate ${getEventBadgeColor(event)}`}
-                title={event.nama_kegiatan}
-              >
-                {event.nama_kegiatan.length > 20 ? event.nama_kegiatan.substring(0, 20) + '...' : event.nama_kegiatan}
-              </div>
+              (() => {
+                const isHolidayEvent = isNationalHolidayEvent(event)
+                return (
+                  <div
+                    key={`${event.id}-${idx}`}
+                    onClick={() => setSelectedEvent(event)}
+                    className={isHolidayEvent
+                      ? 'text-xs text-red-600 font-medium truncate cursor-pointer hover:text-red-700'
+                      : `text-xs text-white px-1 py-0.5 rounded cursor-pointer truncate ${getEventBadgeColor(event)}`
+                    }
+                    title={event.nama_kegiatan}
+                  >
+                    {event.nama_kegiatan.length > 20 ? event.nama_kegiatan.substring(0, 20) + '...' : event.nama_kegiatan}
+                  </div>
+                )
+              })()
             ))}
           </div>
         </div>
