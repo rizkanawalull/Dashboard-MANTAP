@@ -107,16 +107,24 @@ export default function Dashboard() {
       const events = getEventsForDate(date)
       const isToday = isCurrentMonth && date === today.getDate()
       const bgColor = isToday ? 'bg-blue-100' : 'bg-white'
+      const isHoliday = events.some((event) =>
+        event.nama_kegiatan.toLowerCase().includes('libur')
+      )
+      const dateTextColor = isHoliday ? 'text-red-600' : 'text-gray-900'
       
       days.push(
         <div key={date} className={`h-24 p-1 ${bgColor} border border-gray-200 overflow-hidden hover:bg-gray-50 transition-colors cursor-pointer`}>
-          <div className="text-sm font-medium mb-1">{date}</div>
+          <div className={`text-sm font-medium mb-1 ${dateTextColor}`}>{date}</div>
           <div className="space-y-1">
             {events.map((event, idx) => (
               <div
                 key={`${event.id}-${idx}`}
                 onClick={() => setSelectedEvent(event)}
-                className="text-xs bg-blue-500 text-white px-1 py-0.5 rounded cursor-pointer hover:bg-blue-600 truncate"
+                className={`text-xs text-white px-1 py-0.5 rounded cursor-pointer truncate ${
+                  event.nama_kegiatan.toLowerCase().includes('libur')
+                    ? 'bg-red-500 hover:bg-red-600'
+                    : 'bg-blue-500 hover:bg-blue-600'
+                }`}
                 title={event.nama_kegiatan}
               >
                 {event.nama_kegiatan.length > 20 ? event.nama_kegiatan.substring(0, 20) + '...' : event.nama_kegiatan}
