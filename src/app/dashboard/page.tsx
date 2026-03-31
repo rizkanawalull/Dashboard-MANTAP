@@ -267,6 +267,11 @@ export default function Dashboard() {
                   </div>
 
                   <div>
+                    <label className="block text-sm font-medium text-gray-700">Keterangan</label>
+                    <div className="text-sm text-gray-900 mt-1">{selectedEvent.deskripsi || '-'}</div>
+                  </div>
+
+                  <div>
                     <label className="block text-sm font-medium text-gray-700">Pelaksana</label>
                     <ul className="text-sm text-gray-900 mt-1 list-disc list-inside">
                       {selectedEvent.pelaksana.map((p, idx) => (

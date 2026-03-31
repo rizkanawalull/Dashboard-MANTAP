@@ -411,9 +411,9 @@ export default function DataKegiatan() {
               />
             </div>
 
-            {/* Deskripsi */}
+            {/* Keterangan */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
               <textarea
                 value={formData.deskripsi}
                 onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}
@@ -471,6 +471,7 @@ export default function DataKegiatan() {
                 value={formData.jenis_kegiatan}
                 onChange={(e) => setFormData({...formData, jenis_kegiatan: e.target.value})}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                required
               >
                 <option value="">-- Pilih Jenis Tugas Terlebih Dahulu --</option>
                 <option value="Konsinyering">Arsitektur Pemerintah Digital</option>
