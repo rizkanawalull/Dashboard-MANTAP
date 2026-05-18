@@ -488,7 +488,7 @@ export default function DataKegiatan() {
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">Pelaksana Kegiatan</label>
               <div className="grid grid-cols-2 gap-4">
-                {['Mba Desti', 'Mba Aisyah', 'Mba Mutia', 'Mas Kevin', 'Mas Andi', 'Mba Kharisma', 'Mba Nana', 'Mas Evan', 'Mba Citra' ].map((name) => (
+                {['Pak Fahmi', 'Pak Fahri', 'Mba Desti', 'Mba Aisyah', 'Mba Mutia', 'Mas Kevin', 'Mas Andi', 'Mba Kharisma', 'Mba Nana', 'Mas Evan', 'Mba Citra' ].map((name) => (
                   <label key={name} className="flex items-center text-sm">
                     <input 
                       type="checkbox" 
