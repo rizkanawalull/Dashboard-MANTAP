@@ -400,7 +400,7 @@ export default function DataKegiatan() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Nama Kegiatan */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nama Kegiatan</label>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Nama Kegiatan</label>
               <input
                 type="text"
                 value={formData.nama_kegiatan}
@@ -413,7 +413,7 @@ export default function DataKegiatan() {
 
             {/* Keterangan */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Keterangan</label>
               <textarea
                 value={formData.deskripsi}
                 onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}
@@ -423,21 +423,25 @@ export default function DataKegiatan() {
 
             {/* Substansi Kegiatan */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Substansi Kegiatan</label>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Substansi Kegiatan</label>
               <select
                 value={formData.substansi_kegiatan}
                 onChange={(e) => setFormData({...formData, substansi_kegiatan: e.target.value})}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
               >
                 <option value="">-- data lama --</option>
-                <option value="Penyusunan Arsitektur dan Peta Rencana Pemerintah Digital">Penyusunan Arsitektur dan Peta Rencana Pemerintah Digital</option>
-                <option value="Penyusunan Arsitektur">Penyusunan Arsitektur</option>
+                <option value="Pendampingan Penyusunan Arsitektur Pemerintah Digital">Pendampingan Penyusunan Arsitektur Pemerintah Digital</option>
+                <option value="kebijakan dan Strategi Pengembangan Kompetensi dan Budaya Digital ASN">kebijakan dan Strategi Pengembangan Kompetensi dan Budaya Digital ASN</option>
+                <option value="Koordinasi Peningkatan Kompetensi dan Budaya Digital ASN">Koordinasi Peningkatan Kompetensi dan Budaya Digital ASN</option>
+                <option value="Pendampingan Penyusunan Manajemen Pemerintah Digital Layanan Digital Prioritas">Pendampingan Penyusunan Manajemen Pemerintah Digital Layanan Digital Prioritas</option>
+                <option value="Lainnya">Lainnya
+                </option>
               </select>
             </div>
 
             {/* Jenis Tugas */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Jenis Tugas</label>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Jenis Tugas</label>
               <div className="flex space-x-6">
                 <label className="flex items-center">
                   <input
@@ -466,7 +470,7 @@ export default function DataKegiatan() {
 
             {/* Jenis Kegiatan */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Kegiatan</label>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Jenis Kegiatan</label>
               <select
                 value={formData.jenis_kegiatan}
                 onChange={(e) => setFormData({...formData, jenis_kegiatan: e.target.value})}
@@ -482,7 +486,7 @@ export default function DataKegiatan() {
 
             {/* Pelaksana Kegiatan */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Pelaksana Kegiatan</label>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Pelaksana Kegiatan</label>
               <div className="grid grid-cols-2 gap-4">
                 {['Mba Desti', 'Mba Aisyah', 'Mba Mutia', 'Mas Kevin', 'Mas Andi', 'Mba Kharisma', 'Mba Nana', 'Mas Evan', 'Mba Citra' ].map((name) => (
                   <label key={name} className="flex items-center text-sm">
@@ -506,7 +510,7 @@ export default function DataKegiatan() {
 
             {/* Jenis Pertanggung Jawaban Keuangan */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Jenis Pertanggung Jawaban Keuangan</label>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Jenis Pertanggung Jawaban Keuangan</label>
               <div className="grid grid-cols-2 gap-4">
                 {['Belanja Modal', 'Uang Saku Konsi', 'Jasa Konsultan', 'Paket Meeting', 'Konsum', 'Perjadin', 'Narsum', 'Translok'].map((jenis) => (
                   <label key={jenis} className="flex items-center text-sm">
@@ -531,7 +535,7 @@ export default function DataKegiatan() {
             {/* Tanggal Pelaksanaan Kegiatan */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                <label className="block text-sm font-medium text-gray-900 mb-1">Tanggal Mulai</label>
                 <input
                   type="date"
                   value={formData.tanggal_mulai}
@@ -541,7 +545,7 @@ export default function DataKegiatan() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Selesai</label>
+                <label className="block text-sm font-medium text-gray-900 mb-1">Tanggal Selesai</label>
                 <input
                   type="date"
                   value={formData.tanggal_selesai}
@@ -555,7 +559,7 @@ export default function DataKegiatan() {
             {/* Waktu Mulai dan Selesai */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Waktu Mulai</label>
+                <label className="block text-sm font-medium text-gray-900 mb-1">Waktu Mulai</label>
                 <div className="relative">
                   <input
                     type="time"
@@ -566,7 +570,7 @@ export default function DataKegiatan() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Waktu Selesai</label>
+                <label className="block text-sm font-medium text-gray-900 mb-1">Waktu Selesai</label>
                 <div className="relative">
                   <input
                     type="time"
@@ -583,7 +587,7 @@ export default function DataKegiatan() {
 
             {/* Dokumen Pertanggung Jawaban */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Dokumen Pertanggung Jawaban</label>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Dokumen Pertanggung Jawaban</label>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="space-y-1">
                   <label className="flex items-center">
@@ -680,7 +684,7 @@ export default function DataKegiatan() {
 
             {/* Upload Dokumen SPJ */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-4">Upload Dokumen SPJ</label>
+              <label className="block text-sm font-medium text-gray-900 mb-4">Upload Dokumen SPJ</label>
               <div className="border border-gray-300 rounded-lg p-4 space-y-4">
                 {/* Dropdown untuk memilih jenis dokumen */}
                 <div className="flex items-center space-x-4">
@@ -730,7 +734,7 @@ export default function DataKegiatan() {
                   />
                 </div>
                 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-900">
                   Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 5MB per file)
                 </p>
 
@@ -738,7 +742,7 @@ export default function DataKegiatan() {
                 {Object.entries(uploadedFiles).map(([docType, files]) => (
                   files.length > 0 && (
                     <div key={docType} className="bg-gray-50 p-3 rounded border">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2 capitalize">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2 capitalize">
                         {docType.replace('-', ' ')}
                       </h4>
                       <div className="space-y-2">
@@ -746,10 +750,10 @@ export default function DataKegiatan() {
                           <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
                             <div className="flex items-center space-x-2">
                               <span className="text-blue-600 text-sm">📄</span>
-                              <span className="text-sm text-gray-700 truncate max-w-[300px]" title={file.name}>
+                              <span className="text-sm text-gray-900 truncate max-w-[300px]" title={file.name}>
                                 {file.name}
                               </span>
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-gray-900">
                                 ({(file.size / 1024 / 1024).toFixed(2)} MB)
                               </span>
                             </div>
@@ -929,7 +933,7 @@ export default function DataKegiatan() {
                             <div key={idx}>• {p}</div>
                           ))
                         ) : (
-                          <div className="text-gray-400">-</div>
+                          <div className="text-gray-900">-</div>
                         )}
                       </div>
                     </td>
@@ -940,7 +944,7 @@ export default function DataKegiatan() {
                             <div key={idx}>• {p}</div>
                           ))
                         ) : (
-                          <div className="text-gray-400">-</div>
+                          <div className="text-gray-900">-</div>
                         )}
                       </div>
                     </td>
@@ -965,7 +969,7 @@ export default function DataKegiatan() {
                             )
                           })
                         ) : (
-                          <div className="text-gray-400">-</div>
+                          <div className="text-gray-900">-</div>
                         )}
                       </div>
                     </td>
